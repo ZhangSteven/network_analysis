@@ -1,0 +1,23 @@
+DEBUG 2019-03-03 11:21:45,612 connectionpool | Starting new HTTP connection (1): ubuntu-test01
+DEBUG 2019-03-03 11:21:45,632 connectionpool | http://ubuntu-test01:80 "GET /echo/ HTTP/1.1" 404 233
+INFO 2019-03-03 11:21:45,632 rtt : 404,2019-03-03 11:21:45.602230,1,<built-in method total_seconds of datetime.timedelta object at 0x030F7D70>,<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<title>404 Not Found</title>
+<h1>Not Found</h1>
+<p>The requested URL was not found on the server.  If you entered the URL manually please check your spelling and try again.</p>
+
+DEBUG 2019-03-03 11:27:46,615 connectionpool | Starting new HTTP connection (1): ubuntu-test01
+DEBUG 2019-03-03 11:27:46,625 connectionpool | http://ubuntu-test01:80 "GET /echo/1 HTTP/1.1" 200 10
+INFO 2019-03-03 11:27:46,625 rtt | 200,2019-03-03 11:27:46.605230,1,0.02,response 1
+DEBUG 2019-03-03 11:29:04,521 connectionpool | Starting new HTTP connection (1): ubuntu-test01
+DEBUG 2019-03-03 11:29:04,531 connectionpool | http://ubuntu-test01:80 "GET /echo/1 HTTP/1.1" 200 10
+INFO 2019-03-03 11:29:04,531 rtt | 200,2019-03-03 11:29:04.511230,1,0.02,response 1
+INFO 2019-03-03 11:34:41,845 rtt | 200,2019-03-03 11:34:41.830230,1,0.015,response 1
+INFO 2019-03-03 11:55:17,045 rtt | 200,2019-03-03 11:55:17.014230,1,0.031,response 8888888888888888888
+INFO 2019-03-03 11:55:32,110 rtt | 200,2019-03-03 11:55:32.086230,4,0.024,response 4
+INFO 2019-03-03 11:59:31,816 rtt | 200,2019-03-03 11:59:31.802230,4,0.014,response 4
+
+ERROR 2019-03-03 12:01:16,173 rtt | timeout,2019-03-03 12:01:16.122230,1
+INFO 2019-03-03 12:01:18,190 rtt | 200,2019-03-03 12:01:18.173230,2,0.017,response 2
+INFO 2019-03-03 12:03:31,527 rtt | 200,2019-03-03 12:03:31.505230,6,0.022,response 6
+INFO 2019-03-03 12:03:37,600 rtt | 200,2019-03-03 12:03:37.578230,9,0.022,response 9
+ERROR 2019-03-03 12:03:39,628 rtt | error,2019-03-03 12:03:39.601230,10

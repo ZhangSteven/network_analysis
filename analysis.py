@@ -105,7 +105,7 @@ def latencyInterval(t1, t2, line):
 	"""
 	try:
 		latency = latencyFromLine(line)
-		if (t1 < latency) and (latency <= t2):
+		if (t1 <= latency) and (latency < t2):
 			return True
 		else:
 			return False
@@ -209,7 +209,10 @@ def histogram2(step, lines):
 		return count
 		
 
-	return reduce(countLatency, map(latencyFromLine, lines), {})
+	result = reduce(countLatency, map(latencyFromLine, lines), {})
+	intervalCount = lambda d, n: d[n] if n in d else 0
+	return map( partial(intervalCount, result) \
+			  , range(max(result.keys()) + 1))
 
 
 
@@ -260,9 +263,14 @@ if __name__ == '__main__':
 		sys.exit(1)
 
 
+	"""
+	Two ways to calculate latency distributions, obviously the
+	analyzeFile2() approach is more elegant.
+	"""
 	latencies = numpy.arange(0, 0.5, 0.05)
-	# print(list(analyzeFile(latencies, sys.argv[1])))
-	print(analyzeFile2(0.05, sys.argv[1]))
+	print(list(analyzeFile(latencies, sys.argv[1])))
+
+	print(list(analyzeFile2(0.05, sys.argv[1])))
 
 	"""
 	Two output needed:

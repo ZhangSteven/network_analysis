@@ -55,7 +55,7 @@ class TestAnalysis(unittest2.TestCase):
                     , partial(filter, infoLine) \
                     , readLine)(inputFile)
 
-        self.assertEqual(n, 5)
+        self.assertEqual(n, 3)
 
 
 
@@ -65,11 +65,11 @@ class TestAnalysis(unittest2.TestCase):
                 , 'INFO 2019-03-03 11:55:32,110 rtt | 200,2019-03-03 11:55:32.086230,4,0.024,response 4' \
                 , 'INFO 2019-03-03 11:59:31,816 rtt | 200,2019-03-03 11:59:31.802230,4,0.014,response 4' \
                 ]
-        self.assertEqual([0, 2, 1, 0], list(histogram(latencies, lines)))
+        self.assertEqual([0, 1, 2, 0], list(histogram(latencies, lines)))
 
 
 
     def testAnalyzeFile(self):
         inputFile = join(getCurrentDirectory(), 'test', 'samplelog.log')
         latencies = [0, 0.01, 0.02, 0.03, 0.04]
-        self.assertEqual([0, 5, 3, 0], list(analyzeFile(latencies, inputFile)))
+        self.assertEqual([0, 3, 5, 0], list(analyzeFile(latencies, inputFile)))

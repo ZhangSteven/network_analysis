@@ -4,8 +4,9 @@
 # RTT time distribution.
 # 
 
-from functools import partial
+from functools import partial, reduce
 from toolz import functoolz
+from math import floor
 import numpy
 import logging
 logger = logging.getLogger(__name__)
@@ -82,6 +83,17 @@ def correctResponse(line):
 
 
 
+def latencyFromLine(line):
+	"""
+	[String] line => [Float] latency
+
+	Assumption: line is the string representing a line with a valid response
+	HTTP 200 status code.
+	"""
+	return float(line.split('|')[1].split(',')[3])
+
+
+
 def latencyInterval(t1, t2, line):
 	"""
 	[Flat] t1, [Float] t2, [String] line => [Bool] Does the request's network
@@ -92,7 +104,7 @@ def latencyInterval(t1, t2, line):
 	INFO 2019-03-03 11:29:04,531 rtt | 200,2019-03-03 11:29:04.511230,1,0.02,response 1
 	"""
 	try:
-		latency = float(line.split('|')[1].split(',')[3])
+		latency = latencyFromLine(line)
 		if (t1 < latency) and (latency <= t2):
 			return True
 		else:
@@ -169,6 +181,53 @@ def histogram(latencies, lines):
 
 
 
+def histogram2(step, lines):
+	"""
+	[Float] step, [Iterable] lines =>
+		[List] number of lines falling into each latency interval, where
+		the intervals are:
+
+		[0, step), [step, 2*step), ... [n*step, (n+1)*step)
+
+	"""
+	def countLatency(count, latency):
+		"""
+		[Dictionary] count, [Float] latency => [Dictionary] count
+
+		count represents number of latency falling into each latency interval,
+		where 0 represents first latency [0, step), 1 for [step, 2*step), etc.
+
+		0: xx
+		1: xx
+		"""
+		n = floor(latency/step)
+		try:
+			count[n] = count[n] + 1
+		except KeyError:
+			count[n] = 1
+
+		return count
+		
+
+	return reduce(countLatency, map(latencyFromLine, lines), {})
+
+
+
+def analyzeFile2(step, file):
+	"""
+	[List] latencies, [String] file => [List] number of lines falling into 
+											each time interval
+	
+	
+	"""
+	return functoolz.compose(partial(histogram2, step)
+							, partial(filter, correctResponse) \
+						 	, partial(filter, httpStatus200) \
+							, partial(filter, infoLine) \
+							, readLine)(file)
+
+
+
 def analyzeFile(latencies, file):
 	"""
 	[List] latencies, [String] file => [List] number of lines falling into 
@@ -177,10 +236,10 @@ def analyzeFile(latencies, file):
 	
 	"""
 	return histogram(latencies \
-					, functoolz.compose(partial(filter, correctResponse) \
-									   , partial(filter, httpStatus200) \
-									   , partial(filter, infoLine) \
-									   , readLine)(file))
+					 , functoolz.compose(partial(filter, correctResponse) \
+									    , partial(filter, httpStatus200) \
+									    , partial(filter, infoLine) \
+									    , readLine)(file))
 
 
 
@@ -201,5 +260,21 @@ if __name__ == '__main__':
 		sys.exit(1)
 
 
-	latencies = numpy.arange(0, 0.1, 0.01)
-	print(list(analyzeFile(latencies, sys.argv[1])))
+	latencies = numpy.arange(0, 0.5, 0.05)
+	# print(list(analyzeFile(latencies, sys.argv[1])))
+	print(analyzeFile2(0.05, sys.argv[1]))
+
+	"""
+	Two output needed:
+
+	1. histogram for latency distribution
+	2. mean or 90% percentile latency for each time interval, say 
+		9:00am - 9:30am, etc.
+
+	Others like:
+
+	99% or 95% percentile latency over all records
+	Total number of records
+	Total number of timeouts
+	Total number of errors
+	"""
